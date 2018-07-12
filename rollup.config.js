@@ -35,6 +35,7 @@ export default {
     copy({
       'src/index.html': 'public/index.html',
       'node_modules/leaflet/dist/leaflet.css': 'public/leaflet.css',
+      'src/static/': 'static/' 
     }),
 
 		// If you have external dependencies installed from

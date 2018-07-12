@@ -3,7 +3,7 @@
     Hello There
   </div>
   <div id="map" class="box">
-    <Map/>
+    <Map ref:map/>
   </div>
   <div class="box settings">
   </div>
@@ -44,22 +44,45 @@
   export default {
     data() {
       return {
-        panicing: []
-        panicingQuery: []
+
       }
     },
 
     oncreate() {
       window.setInterval( ()=> {
         let xhr = new XMLHttpRequest();
-        xhr.open('GET', "", true);
+        xhr.open('GET', "https://cape.mybluemix.net/locations", true);
+        xhr.setRequestHeader( 'Access-Control-Allow-Origin', 'https://cape.mybluemix.net');
         xhr.send();
 
-        xhr.onreadystatechange = function () {
-          if (this.readyState == 4 && this.status == 200){
-
+        xhr.onreadystatechange = () => {
+          if (xhr.readyState == 4 && xhr.status == 200){
+            this.refs.map.updatePoints(JSON.parse(xhr.responseText))
           }
         }
+
+        // let points = [
+        // {
+        //   latitude: 0,
+        //   longitude: 0,
+        //   uuid: "BLAH 1"
+        // },
+        // {
+        //   latitude: Math.random()*90,
+        //   longitude: Math.random()*90,
+        //   uuid: "BLAH 2"
+        // },
+        // ]
+
+        // if(Math.random()>0.5){
+        //   points.push({
+        //     latitude: Math.random()*90,
+        //     longitude: Math.random()*90,
+        //     uuid: "BLAH 3"
+        //   });
+        // }
+
+        // this.refs.map.updatePoints(points)
       }, 1000)
     },
 
