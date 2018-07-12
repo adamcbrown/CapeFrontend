@@ -1,0 +1,96 @@
+<div class="wrap">
+  <!-- Map goes here -->
+
+  <div class="map" ref:map></div>
+
+</div>
+
+<script>
+  import L from '../leafletRover.js';
+  export default {
+    oncreate() {
+
+      const mymap = L.map("map", {
+            center: [38.4062386734, -110.781233825],
+            zoom: 10,
+            minZoom: 1,
+            maxZoom: 18
+        }).setView([38.4062386734, -110.781233825], 10);
+      L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        maxZoom: 18,
+        id: 'mapbox.streets',
+        accessToken: 'pk.eyJ1IjoiYWRhbWJyb3duOTciLCJhIjoiY2pqaXM4bnljNXhqdzNrcDFxNnQwNGFnMCJ9.J-5HGxCYez3_65b5uvI4Qw'
+      }).addTo(mymap);
+      L.control.scale({imperial: false}).addTo(mymap);
+
+      // Fit to overlay bounds (SW and NE points with (lat, lon))
+      mymap.fitBounds([[38.3720427981, -110.746207438], [38.4404345486, -110.816260212]]);
+
+      const waypointMarkers = [];
+
+      let marker;
+      let roverPath;
+      let waypointPath;
+      let lastLat;
+      let lastLng;
+
+      let setupDone = false;
+      const setup = (lat, lng, angle) => {
+        // Create the rover marker
+        marker = L.marker(L.latLng(lat, lng), {
+          icon: locationIcon
+        }).addTo(mymap);
+        marker.setRotationAngle(angle);
+
+        // Start the rover path
+
+        roverPath = L.polyline(marker.getLatLng(), {
+          color: '#00ff00'
+        }).addTo(mymap);
+
+        // Start the waypoint path
+
+        waypointPath = L.polyline(marker.getLatLng(), {
+          color: 'red',
+          dashArray: '5, 5'
+        }).addTo(mymap);
+
+        lastLat = lat;
+        lastLng = lng;
+
+        setupDone = true;
+      };
+
+      const locationIcon = L.icon({
+        iconUrl: '/static/location_marker_icon.png',
+        iconSize: [64, 64],
+        iconAnchor: [32, 32]
+      });
+      const waypointIcon = L.icon({
+        iconUrl: '/static/map_marker.png',
+        iconSize: [64, 64],
+        iconAnchor: [32, 64],
+        popupAnchor: [0, -32]
+      });
+    }
+  }
+</script>
+
+<style>
+  .map {
+    height: 80vh;
+  }
+
+  .wrap {
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+
+  .box {
+    border-radius: 5px;
+    padding: 10px;
+    border: 1px solid black;
+  }
+</style>

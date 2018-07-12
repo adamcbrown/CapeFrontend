@@ -1,0 +1,78 @@
+<div class="wrapper">
+  <div class="header box">
+    Hello There
+  </div>
+  <div id="map" class="box">
+    <Map/>
+  </div>
+  <div class="box settings">
+  </div>
+</div>
+
+<style>
+  .wrapper {
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 60px 1fr;
+    grid-template-areas: "header header" "map settings";
+  }
+
+  #map{
+    grid-area: map;
+  }
+
+  .settings{
+    grid-area: settings;
+  }
+
+  .header{
+    grid-area: header;
+    font-family: 'Comfortaa', sans-serif;
+  }
+
+  .box {
+    border-radius: 5px;
+    padding: 10px;
+    border: 1px solid black;
+  }
+</style>
+
+<script>
+  import Map from './Map.html'
+
+  export default {
+    data() {
+      return {
+        panicing: []
+        panicingQuery: []
+      }
+    },
+
+    oncreate() {
+      window.setInterval( ()=> {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', "", true);
+        xhr.send();
+
+        xhr.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200){
+
+          }
+        }
+      }, 1000)
+    },
+
+    methods: {
+
+    },
+
+    computed:{
+
+    },
+
+    components: {
+      Map
+    }
+  }
+</script>
