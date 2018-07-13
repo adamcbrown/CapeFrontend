@@ -30,7 +30,7 @@ United States</textarea>
     <h3>People in need of rescue</h3>
     <ul>
       {#each panicking as person, i}
-      <li>({Math.round(person.latitude*10000)/10000}, {Math.round(person.longitude*10000)/10000}) - {person.name}</li>
+      <li>({Math.round(person.latitude*1000000)/1000000}, {Math.round(person.longitude*1000000)/1000000}) - {person.name}</li>
       { /each }
     </ul>
   </div>
