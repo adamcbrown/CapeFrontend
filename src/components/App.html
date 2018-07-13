@@ -27,7 +27,7 @@ United States</textarea>
     </div>
   </div>
   <div class="box panicking">
-    <h3>People in need of rescue</h3>
+    <h2>People in need of rescue:</h2>
     <ul>
       {#each panicking as person, i}
       <li>({Math.round(person.latitude*1000000)/1000000}, {Math.round(person.longitude*1000000)/1000000}) - {person.name}</li>
