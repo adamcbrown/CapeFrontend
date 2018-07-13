@@ -1,11 +1,38 @@
 <div class="wrapper">
   <div class="header box">
-    Hello There
+    <div>
+      <img src="/static/icon.png">
+    </div>
+    <div>
+      <h3>Cape</h3>
+    </div>
   </div>
   <div id="map" class="box">
     <Map ref:map/>
   </div>
-  <div class="box settings">
+  <div class="box update">
+    <div>
+      <h2>Current Shelter:</h2>
+      <p>{shelter}</p>
+    </div>
+    <div>
+      <textarea ref:updateText>IBM (Building 901)
+11501 Burnet Rd
+Austin, TX 78758
+United States</textarea>
+    </div>
+    <div></div>
+    <div>
+      <button on:click="sendUpdate()">Update</button>
+    </div>
+  </div>
+  <div class="box panicking">
+    <h3>People in need of rescue</h3>
+    <ul>
+      {#each panicking as person, i}
+      <li>({Math.round(person.latitude*10000)/10000}, {Math.round(person.longitude*10000)/10000}) - {person.name}</li>
+      { /each }
+    </ul>
   </div>
 </div>
 
@@ -14,27 +41,66 @@
     display: grid;
     grid-gap: 10px;
     grid-template-columns: 2fr 1fr;
-    grid-template-rows: 60px 1fr;
-    grid-template-areas: "header header" "map settings";
+    grid-template-rows: 60px 1fr 1fr ;
+    grid-template-areas: "header header" "map update" "map panicking";
+    font-family: 'Roboto', sans-serif;
+    color: #434343;
   }
 
   #map{
     grid-area: map;
   }
 
-  .settings{
-    grid-area: settings;
+  .panicking{
+    grid-area: panicking;
+
+  }
+
+  img{
+    height: 40px;
+    border-radius: 3px;
   }
 
   .header{
+    display: grid;
     grid-area: header;
     font-family: 'Comfortaa', sans-serif;
+    font-size: 2em;
+    color: white;
+    background-color: #b80000;
+
+    grid-template-columns: 60px 1fr
+  }
+
+  .update{
+    grid-area: update; 
+    display: grid;
+    grid-template-rows: 120px 1fr 20px 15px;
   }
 
   .box {
     border-radius: 5px;
     padding: 10px;
     border: 1px solid black;
+  }
+
+  textarea{
+    width: 100%;
+    height: 100%;
+    resize: none;
+  }
+
+  h2{
+    margin-bottom: 0px;
+  }
+
+  h3{
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+
+  p{
+    margin-top: 10px;
   }
 </style>
 
@@ -44,50 +110,49 @@
   export default {
     data() {
       return {
-
+        panicking: [],
+        shelter: "IBM (Building 901) 11501 Burnet Rd Austin, TX 78758 United States"
       }
     },
 
     oncreate() {
       window.setInterval( ()=> {
         let xhr = new XMLHttpRequest();
-        xhr.open('GET', "https://cape.mybluemix.net/locations", true);
-        xhr.setRequestHeader( 'Access-Control-Allow-Origin', 'https://cape.mybluemix.net');
+        xhr.open('GET', "https://capes.mybluemix.net/locations", true);
+        // xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+        // xhr.setRequestHeader( 'Access-Control-Allow-Methods', 'GET');
+        // xhr.setRequestHeader( 'Access-Control-Allow-Headers', 'Content-Type, Authorization');
         xhr.send();
 
         xhr.onreadystatechange = () => {
           if (xhr.readyState == 4 && xhr.status == 200){
-            this.refs.map.updatePoints(JSON.parse(xhr.responseText))
+            let newMarkers = JSON.parse(xhr.responseText);
+            newMarkers.sort(function(a, b) { return b.timestamp["$date"] - a.timestamp["$date"] })
+            this.refs.map.updatePoints(newMarkers)
+            this.set({
+              panicking: newMarkers
+            })
           }
         }
-
-        // let points = [
-        // {
-        //   latitude: 0,
-        //   longitude: 0,
-        //   uuid: "BLAH 1"
-        // },
-        // {
-        //   latitude: Math.random()*90,
-        //   longitude: Math.random()*90,
-        //   uuid: "BLAH 2"
-        // },
-        // ]
-
-        // if(Math.random()>0.5){
-        //   points.push({
-        //     latitude: Math.random()*90,
-        //     longitude: Math.random()*90,
-        //     uuid: "BLAH 3"
-        //   });
-        // }
-
-        // this.refs.map.updatePoints(points)
       }, 1000)
     },
 
     methods: {
+      sendUpdate(){
+        this.set({
+          shelter: this.refs.updateText.value
+        })
 
+        let xhr = new XMLHttpRequest();
+        let message= "The nearest shelter is: "+escape(this.refs.updateText.value)
+        xhr.open('POST', "https://capes.mybluemix.net/update?msg="+message, true);
+        // xhr.withCredentials = "true";
+        // xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+        // xhr.setRequestHeader( 'Access-Control-Allow-Methods', 'GET');
+        // xhr.setRequestHeader( 'Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        // xhr.setRequestHeader( 'Access-Control-Allow-Origin', 'https://cape.mybluemix.net');
+        xhr.send();
+      }
     },
 
     computed:{

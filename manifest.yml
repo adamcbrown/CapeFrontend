@@ -1,4 +1,4 @@
-host: python-flask-basic-wdsqd
+host: cape-dashboard
 domain: mybluemix.net
 applications:
 - instances: 1
@@ -8,4 +8,4 @@ applications:
   command: python manage.py start 0.0.0.0:$PORT
   memory: 512M
   domain: mybluemix.net
-  host: python-flask-basic-wdsqd
+  host: cape-dashboard
